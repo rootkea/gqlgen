@@ -14,3 +14,7 @@ type Mutation {
 type Subscription {
   subscribe(subscriber: String!): String!
 }
+
+type Query {
+  foo(id: ID!): String!
+}

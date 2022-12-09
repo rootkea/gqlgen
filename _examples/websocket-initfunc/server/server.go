@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -14,15 +15,22 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
 	"github.com/gorilla/websocket"
-	"github.com/gqlgen/_examples/websocket-initfunc/server/graph"
 	"github.com/rs/cors"
+
+	"github.com/gqlgen/_examples/websocket-initfunc/server/graph"
 )
 
 func webSocketInit(ctx context.Context, initPayload transport.InitPayload) (context.Context, error) {
+	fmt.Println("In webSocketInit")
+	for k, v := range initPayload {
+		fmt.Println(k, v)
+	}
+
 	// Get the token from payload
 	any := initPayload["authToken"]
 	token, ok := any.(string)
 	if !ok || token == "" {
+		fmt.Println("authToken not found in transport payload")
 		return nil, errors.New("authToken not found in transport payload")
 	}
 
