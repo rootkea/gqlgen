@@ -21,16 +21,17 @@ import (
 )
 
 func webSocketInit(ctx context.Context, initPayload transport.InitPayload) (context.Context, error) {
-	fmt.Println("In webSocketInit")
+	fmt.Println("-----------------------------------------------------")
+	fmt.Println("webSocketInit: start")
 	for k, v := range initPayload {
 		fmt.Println(k, v)
 	}
 
 	// Get the token from payload
-	any := initPayload["authToken"]
+	any := initPayload["Authorization"]
 	token, ok := any.(string)
 	if !ok || token == "" {
-		fmt.Println("authToken not found in transport payload")
+		fmt.Println("webSocketInit: authToken not found in transport payload")
 		return nil, errors.New("authToken not found in transport payload")
 	}
 
@@ -72,6 +73,9 @@ func main() {
 		},
 		InitFunc: func(ctx context.Context, initPayload transport.InitPayload) (context.Context, error) {
 			return webSocketInit(ctx, initPayload)
+		},
+		ErrorFunc: func(ctx context.Context, err error) {
+			fmt.Println("ErrorFunc:" + err.Error())
 		},
 	})
 	srv.Use(extension.Introspection{})
