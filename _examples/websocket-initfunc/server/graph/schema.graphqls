@@ -9,10 +9,12 @@ type Dummy {
 
 type Mutation {
   postMessageTo(subscriber: String!, content: String!): ID!
+  postAnnouncement(content: String!): String!
 }
 
 type Subscription {
   subscribe(subscriber: String!): String!
+  announcement(subscriber: String!): String!
 }
 
 type Query {

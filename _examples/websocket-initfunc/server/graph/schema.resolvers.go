@@ -14,6 +14,21 @@ func (r *mutationResolver) PostMessageTo(ctx context.Context, subscriber string,
 	panic(fmt.Errorf("not implemented"))
 }
 
+// PostAnnouncement is the resolver for the postAnnouncement field.
+func (r *mutationResolver) PostAnnouncement(ctx context.Context, content string) (string, error) {
+	if ch, ok := chanMap["ann"]; ok {
+		select {
+		case ch <- content:
+		default:
+			delete(chanMap, "ann")
+		}
+	} else {
+		fmt.Println("No subscription found!")
+	}
+
+	return content, nil
+}
+
 // Foo is the resolver for the foo field.
 func (r *queryResolver) Foo(ctx context.Context, id string) (string, error) {
 	panic(fmt.Errorf("not implemented: Foo - foo"))
@@ -23,6 +38,20 @@ func (r *queryResolver) Foo(ctx context.Context, id string) (string, error) {
 func (r *subscriptionResolver) Subscribe(ctx context.Context, subscriber string) (<-chan string, error) {
 	fmt.Println(ctx.Value("username"))
 	ch := make(<-chan string)
+
+	return ch, nil
+}
+
+// Announcement is the resolver for the announcement field.
+func (r *subscriptionResolver) Announcement(ctx context.Context, subscriber string) (<-chan string, error) {
+	var ch chan string
+
+	if _, ok := chanMap["ann"]; !ok {
+		ch = make(chan string)
+		chanMap["ann"] = ch
+	} else {
+		ch = chanMap["ann"]
+	}
 
 	return ch, nil
 }
